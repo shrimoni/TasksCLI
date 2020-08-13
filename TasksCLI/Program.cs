@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TasksCLI.Utils;
 
 namespace TasksCLI
 {
@@ -7,6 +8,8 @@ namespace TasksCLI
     {
         public static List<Task> tasks = new List<Task>();
         public const string tasksCliVersion = "1.0.0";
+
+        private static int taskID = 0;
 
         static void PerformOpertaionBasedOnUserChoice(int userChoice)
         {
@@ -24,6 +27,7 @@ namespace TasksCLI
                     tasks.Add(task);
                     Console.WriteLine("Task '{0}' created sucessfully!", task.name);
                     Console.WriteLine();
+                    task.taskID = ++taskID;
                     break;
                 case 2:
                     Console.WriteLine("Edit a task");
@@ -86,7 +90,6 @@ namespace TasksCLI
             //    return;
             //}
             Console.WriteLine("Hey! User");
-
             while (true)
             {
                 Console.WriteLine();

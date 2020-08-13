@@ -16,6 +16,7 @@
 
     public class SubTask
     {
+        public int subTaskID;
         public string taskDetails;
         public Priority priority;
         public Status status;

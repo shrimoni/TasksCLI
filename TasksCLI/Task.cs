@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TasksCLI.Utils;
 
 namespace TasksCLI
 {
@@ -8,13 +9,14 @@ namespace TasksCLI
         public int taskID;
         public string name;
         public List<SubTask> subTasks = new List<SubTask>();
-        public DateTime dateCreated;
+        public string dateCreated;
 
         public static Task CreateTask(string taskName)
         {
             var task = new Task()
             {
                 name = taskName,
+                dateCreated = DateTime.Now.ToString("MM/dd/yyyy HH:mm")
             };
 
             return task;
@@ -28,11 +30,11 @@ namespace TasksCLI
                 return;
             }
 
-            Console.WriteLine();
-            Console.WriteLine("----------------------------");
-            Console.WriteLine("Task");
-            Console.WriteLine("----------------------------");
-            Console.WriteLine(task.name);
+            var columns = new string[] { "Task", "Task ID", "Date Created" };
+            var table = new ConsoleTable(columns, 20);
+            table.CreateColumn();
+            table.CreateRow(new string[] { task.name, task.taskID.ToString(), task.dateCreated }, true);
+
             if (task.subTasks.Count > 0)
             {
                 foreach (var subTask in task.subTasks)
@@ -40,7 +42,6 @@ namespace TasksCLI
                     Console.WriteLine("-{0}", subTask.taskDetails);
                 }
             }
-            Console.WriteLine("----------------------------");
             Console.WriteLine();
         }
 
@@ -52,20 +53,24 @@ namespace TasksCLI
                 return;
             }
             Console.WriteLine();
-            Console.WriteLine("----------------------------");
-            Console.WriteLine("Tasks");
-            Console.WriteLine("----------------------------");
-            foreach (var task in tasks)
+            var columns = new string[] { "Task", "Task ID", "Date Created" };
+            var table = new ConsoleTable(columns, 20);
+            table.CreateColumn();
+            for (var i = 0; i < tasks.Count; i++)
             {
-                Console.WriteLine(task.name);
-                if (task.subTasks.Count > 0)
-                {
-                    foreach (var subTask in task.subTasks)
-                    {
-                        Console.WriteLine("-{0}", subTask.taskDetails);
-                    }
-                }
-                Console.WriteLine("----------------------------");
+                var isLastRow = false;
+
+                if (i == tasks.Count - 1)
+                    isLastRow = true;
+
+                table.CreateRow(new string[] { tasks[i].name, tasks[i].taskID.ToString(), tasks[i].dateCreated}, isLastRow);
+                //if (task.subTasks.Count > 0)
+                //{
+                //    foreach (var subTask in task.subTasks)
+                //    {
+                //        Console.WriteLine("-{0}", subTask.taskDetails);
+                //    }
+                //}
             }
             Console.WriteLine();
         }
