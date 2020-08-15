@@ -1,59 +1,101 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TasksCLI.Utils
 {
     public class ConsoleTable
     {
         public int columnLength;
+        const int maximumTableWidth = 100;
+        public int tableWidth = 0;
         public string[] columns;
+        public List<List<string>> tableData = new List<List<string>>();
 
-        public ConsoleTable(string[] cols, int colLength = 10)
+        public void AddColumn(List<string> columnData)
         {
-            columns = cols;
-            columnLength = colLength;
+            if (tableData.Count == 0)
+            {
+                tableData.Add(columnData);
+            }
+
+            CalculateMaxTableWidth();
         }
 
-        public void CreateColumn()
+        public void AddRow(List<string> rowData)
         {
-            if (columns.Length == 0)
+            if (tableData.Count == 0)
                 return;
 
-            GenerateSeparator();
-            foreach (var col in columns)
-            {
-                var column = "|" + col + new string(' ', columnLength - col.Length);
-                Console.Write(column);
-            }
-            Console.Write(" |\n");
-            GenerateSeparator();
+            tableData.Add(rowData);
+
+            UpdateDataForTableView();
+            CalculateMaxTableWidth();
         }
 
-        public void CreateRow(string[] rowData, bool isLastRow = false)
+        public void ShowTable()
         {
-            if (rowData.Length == 0)
+            if (tableData.Count == 0)
                 return;
 
-            foreach (var row in rowData)
+            Console.WriteLine("Maximum table width: " + tableWidth);
+            Console.WriteLine(new string('-', tableWidth));
+            foreach (var data in tableData)
             {
-                var rowValue = "|" + row + new string(' ', columnLength - row.Length);
-                Console.Write(rowValue);
+                foreach (var val in data)
+                {
+                    Console.Write("|" + val);
+                }
+                Console.Write("|\n");
+                Console.WriteLine(new string('-', tableWidth));
             }
-            Console.Write(" |\n");
-
-            if (isLastRow)
-                GenerateSeparator();
         }
 
-        // To Generator as table lines which acts a separator
-        public void GenerateSeparator()
+        void UpdateDataForTableView()
         {
-            var separatorLength = 0;
-            Console.Write(' ');
-            foreach (var col in columns)
+            if (tableData.Count <= 1)
+                return;
+
+            for (var i = 1; i < tableData.Count; i++)
             {
-                separatorLength += (col.Length + columnLength + 2);
+                for (var j = 0; j < tableData[i].Count; j++)
+                {
+                    var length = tableData[i][j].Length;
+                    if (length < tableData[i - 1][j].Length)
+                    {
+                        length = tableData[i - 1][j].Length;
+                    }
+                    UpdateOtherRowValues(j, i, length);
+                }
             }
-            Console.WriteLine(new string('-', separatorLength));
+        }
+
+        void UpdateOtherRowValues(int colIndex, int rowIndexToStart, int length)
+        {
+            for (var i = rowIndexToStart; i >= 0; i--)
+            {
+                var difference = length - tableData[i][colIndex].Length;
+                tableData[i][colIndex] = tableData[i][colIndex] + new string(' ', difference);
+            }
+        }
+
+        public void CalculateMaxTableWidth()
+        {
+            if (tableData.Count == 0)
+                return;
+
+            foreach (var data in tableData)
+            {
+                var width = 0;
+                foreach (var val in data)
+                {
+                    width += val.Length;
+                }
+
+                width += data.Count + 1;
+
+                if (width < maximumTableWidth && width > tableWidth)
+                    tableWidth = width;
+            }
         }
     }
 }

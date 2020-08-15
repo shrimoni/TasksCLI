@@ -20,5 +20,6 @@
         public string taskDetails;
         public Priority priority;
         public Status status;
+
     }
 }

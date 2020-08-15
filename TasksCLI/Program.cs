@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using TasksCLI.Utils;
 
 namespace TasksCLI
 {
@@ -41,10 +40,9 @@ namespace TasksCLI
                     break;
                 case 4:
                     Console.WriteLine("Add SubTasks");
-                    Console.WriteLine("Enter the task name to add sub tasks: ");
-                    taskName = Console.ReadLine();
-                    var taskToAddSubTasks = Task.GetTaskByName(tasks, taskName);
-
+                    Console.WriteLine("Enter the task id to add sub tasks: ");
+                    var id = Console.ReadLine();
+                    var taskToAddSubTasks = Task.GetTaskById(tasks, id);
                     Console.WriteLine("Add a subtask or enter to exit");
                     var subTaskDetails = Console.ReadLine();
                     if (string.IsNullOrWhiteSpace(subTaskDetails))
@@ -52,21 +50,20 @@ namespace TasksCLI
                         break;
                     }
 
-                    var subTask = new SubTask();
-                    subTask.taskDetails = subTaskDetails;
-                    taskToAddSubTasks.subTasks.Add(subTask);
-                    Console.WriteLine("Sub tasks added successfully to {0}!", taskToAddSubTasks.name);
+                    Task.AddSubTaskToTask(taskToAddSubTasks, subTaskDetails);
                     break;
-
                 case 5:
                     Console.WriteLine("Edit a SubTask");
                     break;
                 case 6:
                     Console.WriteLine("Show a Task");
-                    Console.WriteLine("Enter task name to display: ");
-                    taskName = Console.ReadLine();
-                    task = Task.GetTaskByName(tasks, taskName);
-                    Task.ShowTask(task);
+                    Console.WriteLine("Enter task id to display: ");
+                    id = Console.ReadLine();
+                    task = Task.GetTaskById(tasks, id);
+                    if(task != null)
+                        Task.ShowTask(task);
+                    else
+                        Console.WriteLine("Invalid Task ID");
                     break;
                 case 7:
                     Console.WriteLine("Show all tasks");
@@ -111,7 +108,7 @@ namespace TasksCLI
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Invalid Input! Please Try again");
+                    Console.WriteLine("Invalid Input! Please Try again" + e);
                 }
             }
         }
