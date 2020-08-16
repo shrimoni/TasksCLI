@@ -1,2 +1,2 @@
 # TasksCLI
-A Command line based task creation application - WIP
+A Command line based tasks creation application - WIP
