@@ -25,11 +25,28 @@ namespace TasksCLI
 
         public static void AddSubTaskToTask(Task task, string subTaskDetails)
         {
-            var subTask = new SubTask();
-            subTask.taskDetails = subTaskDetails;
+            var subTask = new SubTask
+            {
+                taskDetails = subTaskDetails
+            };
+
+            if (task.subTasks.Count > 1)
+                subTask.subTaskID = task.subTasks[task.subTasks.Count - 1].subTaskID + 1;
+            else
+                subTask.subTaskID = ++task.subTaskLastID;
+
             task.subTasks.Add(subTask);
-            subTask.subTaskID = ++task.subTaskLastID;
+            //subTask.subTaskID = ++task.subTaskLastID;
             Console.WriteLine("Sub tasks added successfully to {0}!", task.name);
+        }
+
+        public static void ChangeTaskName(Task task, string taskName)
+        {
+            if (task == null && string.IsNullOrWhiteSpace(taskName))
+                return;
+
+            task.name = taskName;
+            Console.WriteLine("Task name changed successfully");
         }
 
         public static void ShowTask(Task task)
@@ -51,6 +68,7 @@ namespace TasksCLI
                 task.dateCreated.ToString()
             });
             table.ShowTable();
+
             if (task.subTasks.Count > 0)
             {
                 var cols = new List<string> { "Task Details", "Task ID", "Priority", "Status" };
@@ -107,6 +125,19 @@ namespace TasksCLI
             Console.WriteLine("Task removed successfully.");
         }
 
+
+        public static void DeleteSubTask(Task task, SubTask subTask)
+        {
+            if (task.subTasks.Count == 0 || !task.subTasks.Contains(subTask) || task == null || subTask == null)
+            {
+                Console.WriteLine("Either the task is not available or no tasks are available!");
+                return;
+            }
+
+            task.subTasks.Remove(subTask);
+            Console.WriteLine("Sub task removed successfully.");
+        }
+
         public static Task GetTaskByName(List<Task> tasks, string taskName)
         {
             Task task = null;
@@ -150,6 +181,34 @@ namespace TasksCLI
             }
 
             return task;
+        }
+
+        public static SubTask GetSubTaskByID(Task task, string taskID)
+        {
+            SubTask subTask = null;
+
+            if (task == null)
+            {
+                Console.WriteLine("Cannot return the sub task! Invalid data!");
+                return subTask;
+            }
+
+            for (var i = 0; i < task.subTasks.Count; i++)
+            {
+                var sTask = task.subTasks[i];
+                try
+                {
+                    if (sTask.subTaskID== Convert.ToInt32(taskID))
+                        subTask = sTask;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Enter valid sub task id");
+                }
+
+            }
+
+            return subTask;
         }
     }
 }
